@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
 import { addItem } from "./CartSlice";
+import { useDispatch, useSelector } from "react-redux";
 function ProductList({ onHomeClick }) {
   const [showCart, setShowCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState({});
@@ -293,12 +294,13 @@ function ProductList({ onHomeClick }) {
       [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
     }));
   };
+  const dispatch = useDispatch();
+  const cartItems = useSelector((s) => (s.cart && s.cart.items) || []);
 
-  // const calculateTotalQuantity = () => {
-  //   return CartItems
-  //     ? CartItems.reduce((total, item) => total + item.quantity, 0)
-  //     : 0;
-  // };
+  const calculateTotalQuantity = () => {
+    if (!cartItems || cartItems.length === 0) return 0;
+    return cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+  };
 
   const handleContinueShopping = (e) => {
     e.preventDefault();
@@ -351,6 +353,15 @@ function ProductList({ onHomeClick }) {
                     stroke-width="2"
                     id="mainIconPathAttribute"
                   ></path>
+                  <text
+                    x="150"
+                    y="40"
+                    fill="#ffffff"
+                    fontSize="50px"
+                    fontFamily="Arial, sans-serif"
+                  >
+                    {calculateTotalQuantity()}
+                  </text>
                 </svg>
               </h1>
             </a>
